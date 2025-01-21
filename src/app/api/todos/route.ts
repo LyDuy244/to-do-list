@@ -1,5 +1,6 @@
 import {createConnection} from "@/config/db";
 import {NextResponse} from "next/server";
+import mysql from "mysql2/promise";
 
 export async function GET(req: Request, res: Response) {
     try {
@@ -23,13 +24,17 @@ export async function POST(req: Request, res: Response) {
         const db = await createConnection()
         let sql = "INSERT INTO todos (`name`) VALUES (?)";
         let values = [body.name]
-        await db.query(sql, values);
+        const [result] = await db.query<mysql.ResultSetHeader>(sql, values);
+        const insertedId = result.insertId
 
 
         // Trả về phản hồi thành công
         return NextResponse.json({
             message: "Thêm todo thành công",
-            data: { name: body.name }
+            data: {
+                id: insertedId,
+                name: body.name
+            }
         });
     } catch (error: any) {
         return NextResponse.json({error: error.message})

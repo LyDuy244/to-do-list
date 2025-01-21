@@ -7,20 +7,19 @@ const todoApiRequest = {
                 method: "GET",
             })
             const response = await data.json()
-            // setTodoList(response.data)
-            return response;
+            return response.data;
         }catch (error){
             console.error(error)
         }
     },
-    add:  async (todo: string) => {
+    add:  async (name: string) => {
         const response = await fetch("/api/todos", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                name: todo,
+                name,
             }),
         });
 
@@ -30,18 +29,19 @@ const todoApiRequest = {
 
         return response.json(); // Giả sử bạn muốn trả về JSON từ server
     },
-    edit: async ({todoEdit, todo}:{todoEdit: ToDoType, todo: string}) => {
+    edit: async ({todo, name}:{todo: ToDoType, name: string}) => {
         try {
-            const response = await fetch("/api/todos/" + todoEdit.id, {
+            const response = await fetch("/api/todos/" + todo.id, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    name: todo
+                    name,
+                    id: todo.id
                 })
             })
-            return response.json(); // Giả sử bạn muốn trả về JSON từ server
+            return await response.json(); // Giả sử bạn muốn trả về JSON từ server
         }catch (error){
             console.log(error)
         }
@@ -49,9 +49,12 @@ const todoApiRequest = {
     delete: async (id: string) => {
         try {
             const response = await fetch("/api/todos/" + id, {
-                method: "DELETE"
+                method: "DELETE",
+                body: JSON.stringify({
+                    id
+                })
             })
-            return response.json(); // Giả sử bạn muốn trả về JSON từ server
+            return await response.json(); // Giả sử bạn muốn trả về JSON từ server
         }catch (error){
             console.log(error)
         }
